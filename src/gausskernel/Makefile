@@ -120,7 +120,7 @@ endif
 ##############################################################################
 # libobs component
 ###############################################################################
-LIBS += -L$(LIBCURL_LIB_PATH) -L$(LIBOPENSSL_LIB_PATH) 
+LIBS += -L$(LIBCURL_LIB_PATH) -L$(LIBOPENSSL_LIB_PATH) -llapacke -llapack -lblas -laws-crt-cpp -laws-c-mqtt -laws-c-event-stream -laws-c-s3 -laws-c-auth -laws-c-http -laws-c-io -ls2n -laws-c-compression -laws-c-cal -laws-c-sdkutils -laws-checksums -laws-c-common 
 ifeq ($(enable_lite_mode), no)
 ifeq ($(with_obs), yes)
 LIBS += -leSDKOBS -leSDKLogAPI -lpcre -liconv -lnghttp2 -llog4cpp
@@ -330,7 +330,7 @@ ifneq ($(PORTNAME), win32)
 ifneq ($(PORTNAME), aix)
 
 gaussdb: $(OBJS) |
-	$(CC) $(CXXFLAGS) $(LDFLAGS) $(LDFLAGS_EX) $(export_dynamic) $(call expand_subsys,$^) $(LIBS) $(LLVMLIBS) $(HOTPATCH_ATOMIC_LDS) -Wl,-z,max-page-size=2097152 -Wl,-z,common-page-size=2097152 -o $@
+	$(CC) $(CXXFLAGS) $(LDFLAGS) $(LDFLAGS_EX) $(export_dynamic) $(call expand_subsys,$^) $(LIBS) $(LLVMLIBS) $(HOTPATCH_ATOMIC_LDS) -Wl,-z,max-page-size=2097152 -Wl,-z,common-page-size=2097152 -Wl,--no-as-needed -Wl,--copy-dt-needed-entries -o $@
 ifeq ($(enable_relocation), yes)
 	$(CC) $(CXXFLAGS) $(LDFLAGS) $(LDFLAGS_EX) $(export_dynamic) $(call expand_subsys,$^) $(LIBS) $(LLVMLIBS) $(HOTPATCH_ATOMIC_LDS) -o $@.map -Wl,-q
 endif
@@ -645,7 +645,7 @@ ifeq ($(with_obs), yes)
 endif
 endif
 	cp -d $(ZLIB_LIB_PATH)/libz* '$(DESTDIR)$(libdir)/'
-	cp -d $(XGBOOST_LIB_PATH)/libxgboost* '$(DESTDIR)$(libdir)/'
+	-cp -d $(XGBOOST_LIB_PATH)/libxgboost* '$(DESTDIR)$(libdir)/' 2>/dev/null || true
 	cp -d $(CJSON_LIB_PATH)/libcjson* '$(DESTDIR)$(libdir)/'
 	cp -d $(TEXT_SPLITTER_LIB_PATH)/libtext_splitter_ffi* '$(DESTDIR)$(libdir)/'
 	cp -d $(ONNXRUNTIME_LIB_PATH)/libonnx* '$(DESTDIR)$(libdir)/'
@@ -694,7 +694,7 @@ endif
 endif
 
 ifeq ($(enable_lite_mode), no)
-	cp -r /usr/lib/jvm/java-1.8.0-openjdk-*/jre/* '$(DESTDIR)$(bindir)/../jre/'
+	cp -r /usr/lib/jvm/java-1.8.0-*/jre/* '$(DESTDIR)$(bindir)/../jre/'
 endif
 
 	cp '$(top_builddir)/src/include/ssl/openssl_gsql.cnf' '$(DESTDIR)$(datadir)/../sslcert/gsql/openssl.cnf'

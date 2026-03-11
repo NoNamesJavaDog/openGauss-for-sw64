@@ -960,6 +960,9 @@ EOF
     m68*:Linux:*:*)
 	echo ${UNAME_MACHINE}-unknown-linux-gnu
 	exit ;;
+    sw_64:Linux:*:*)
+	echo sw_64-unknown-linux-"$LIBC"
+	exit ;;
 	loongarch*:Linux:*:*)
 	echo "$UNAME_MACHINE"-linux-"$LIBC"
 	exit ;;

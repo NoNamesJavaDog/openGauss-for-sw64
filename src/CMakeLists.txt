@@ -198,12 +198,14 @@ install(CODE "execute_process(
 )
 
 # open source install part
-file(GLOB JAVA_PATHS "/usr/lib/jvm/java-1.8.0-openjdk-*/jre")
+file(GLOB JAVA_PATHS "/usr/lib/jvm/java-1.8.0-openjdk-*/jre" "/usr/lib/jvm/java-1.8.0-swjdk-*/jre")
 list(SORT JAVA_PATHS)
 list(REVERSE JAVA_PATHS)
-list(GET JAVA_PATHS 0 LATEST_JAVA_JRE)
-if(NOT "${ENABLE_LITE_MODE}" STREQUAL "ON")
-    install(DIRECTORY ${LATEST_JAVA_JRE} DESTINATION . FILE_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE OWNER_READ GROUP_READ)
+if(JAVA_PATHS)
+    list(GET JAVA_PATHS 0 LATEST_JAVA_JRE)
+    if(NOT "${ENABLE_LITE_MODE}" STREQUAL "ON")
+        install(DIRECTORY ${LATEST_JAVA_JRE} DESTINATION . FILE_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE OWNER_READ GROUP_READ)
+    endif()
 endif()
 
 if("${ENABLE_MULTIPLE_NODES}" STREQUAL "OFF")
@@ -291,7 +293,9 @@ install(DIRECTORY ${GCC_LIB_PATH}/lib64/ DESTINATION lib
 
 file(GLOB libstdc_files ${GCC_LIB_PATH}/lib64/libstdc++.so.6.0.*)
 file(GLOB to_remove ${GCC_LIB_PATH}/lib64/libstdc++.so.6.*.py)
-list(REMOVE_ITEM libstdc_files ${to_remove})
+if(to_remove)
+    list(REMOVE_ITEM libstdc_files ${to_remove})
+endif()
 install(CODE "execute_process(
     COMMAND rm -f ${prefix_home}/lib/libstdc++.so.6
     COMMAND cp ${libstdc_files} ${prefix_home}/lib/libstdc++.so.6)"

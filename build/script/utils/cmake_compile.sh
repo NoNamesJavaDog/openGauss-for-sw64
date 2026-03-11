@@ -72,11 +72,14 @@ function make_license_control()
 {
     python_exec=$(which python 2>/dev/null)
 
+    local rc=0
     if [ -x "$python_exec" ]; then
-        $python_exec ${binarylib_dir}/buildtools/license_control/encrypted_version_file.py >> "$LOG_FILE" 2>&1
+        (unset PYTHONHOME PYTHONPATH; LD_LIBRARY_PATH=/usr/lib64:/usr/lib \
+            $python_exec ${binarylib_dir}/buildtools/license_control/encrypted_version_file.py >> "$LOG_FILE" 2>&1)
+        rc=$?
     fi
 
-    if [ $? -ne 0 ]; then
+    if [ $rc -ne 0 ]; then
         die "create ${binarylib_dir}/buildtools/license_control license file failed."
     fi
 

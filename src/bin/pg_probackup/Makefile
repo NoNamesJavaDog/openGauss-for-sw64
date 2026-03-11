@@ -58,7 +58,7 @@ PG_LIBS_INTERNAL = $(libpq_pgport) ${PTHREAD_CFLAGS}
 LDFLAGS += -I$(top_builddir)/$(subdir)/oss/include
 
 # add aws s3 so .h
-LDFLAGS += -L$(AWS_SDK_LIB_PATH) -laws-cpp-sdk-core -laws-cpp-sdk-s3 -I$(AWS_SDK_INCLUDE_PATH)
+LDFLAGS += -L$(AWS_SDK_LIB_PATH) -laws-cpp-sdk-core -laws-cpp-sdk-s3 -laws-crt-cpp -laws-c-mqtt -laws-c-event-stream -laws-c-s3 -laws-c-auth -laws-c-http -laws-c-io -ls2n -laws-c-compression -laws-c-cal -laws-c-sdkutils -laws-checksums -laws-c-common -I$(AWS_SDK_INCLUDE_PATH)
 
 all: submake-pagecompression $(PROGRAM)
 

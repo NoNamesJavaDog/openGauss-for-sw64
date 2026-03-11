@@ -26,7 +26,7 @@
 
 #ifdef __aarch64__
 #include <arm_neon.h>
-#else
+#elif !defined(__sw_64__)
 #include <immintrin.h>
 #endif
 
@@ -783,7 +783,7 @@ VectorL2SquaredDistance(int dim, float *ax, float *bx)
 
     return _mm_cvtss_f32(msum2);
 }
-#else
+#elif defined(__x86_64__) || defined(__i386__)
 
 VECTOR_TARGET_CLONES float VectorL2SquaredDistance(int dim, float *ax, float *bx)
 {
@@ -861,7 +861,7 @@ VectorInnerProduct(int dim, float *ax, float *bx)
     }
     return dis;
 }
-#else
+#elif defined(__x86_64__) || defined(__i386__)
 
 VECTOR_TARGET_CLONES float VectorInnerProduct(int dim, float *ax, float *bx)
 {
@@ -1569,7 +1569,7 @@ void VectorMadd(size_t n, const float *ax, float bf, const float *bx, float *cx)
         cx[i] = ax[i] + bf * bx[i];
     }
 }
-#else
+#elif defined(__x86_64__) || defined(__i386__)
 void VectorMadd(size_t n, const float *ax, float bf, const float *bx, float *cx)
 {
     for (size_t i = 0; i < n; i++) {
@@ -1681,7 +1681,7 @@ void VectorL2SquaredDistanceNY(size_t d, size_t ny, float *x, char *pqTable, Siz
     }
 #undef DISPATCH
 }
-#else
+#elif defined(__x86_64__) || defined(__i386__)
 void VectorL2SquaredDistanceNY(size_t d, size_t ny, float *x, char *pqTable, Size subSize, int offset, float *dis)
 {
     VectorL2SquaredDistanceNYRef(d, ny, x, pqTable, subSize, offset, dis);
@@ -1715,7 +1715,7 @@ void VectorInnerProductNY(size_t d, size_t ny, float *x, char *pqTable, Size sub
     }
 #undef DISPATCH
 }
-#else
+#elif defined(__x86_64__) || defined(__i386__)
 void VectorInnerProductNY(size_t d, size_t ny, float *x, char *pqTable, Size subSize, int offset, float *dis)
 {
     VectorInnerProductNYRef(d, ny, x, pqTable, subSize, offset, dis);
@@ -1745,7 +1745,7 @@ float VectorRbqDpPopcnt(int dim, int qb, uint8_t *qx, uint8_t *ex)
         }
 
         for (int offset = dim128b; offset < dim64b; offset += 8) {
-#else
+#elif defined(__x86_64__) || defined(__i386__) || defined(__sw_64__)
         int dim64b = (dim8b / 8) * 8;
         for (int offset = 0; offset < dim64b; offset += 8) {
 #endif
@@ -1921,3 +1921,51 @@ double vector_square(float* x, int dim)
 
     return square;
 }
+
+
+/* sw_64 scalar fallback implementations */
+#if defined(__sw_64__)
+
+static float L2SquaredDistanceRef_sw64(int dim, float *ax, float *bx)
+{
+    float distance = 0.0f;
+    for (int i = 0; i < dim; i++) {
+        float diff = ax[i] - bx[i];
+        distance += diff * diff;
+    }
+    return distance;
+}
+
+float VectorL2SquaredDistance(int dim, float *ax, float *bx)
+{
+    return L2SquaredDistanceRef_sw64(dim, ax, bx);
+}
+
+float VectorInnerProduct(int dim, float *ax, float *bx)
+{
+    float distance = 0.0f;
+    for (int i = 0; i < dim; i++) {
+        distance += ax[i] * bx[i];
+    }
+    return distance;
+}
+
+void VectorMadd(size_t n, const float *ax, float bf, const float *bx, float *cx)
+{
+    for (size_t i = 0; i < n; i++) {
+        cx[i] = ax[i] + bf * bx[i];
+    }
+}
+
+void VectorL2SquaredDistanceNY(size_t d, size_t ny, float *x, char *pqTable, Size subSize, int offset, float *dis)
+{
+    VectorL2SquaredDistanceNYRef(d, ny, x, pqTable, subSize, offset, dis);
+}
+
+void VectorInnerProductNY(size_t d, size_t ny, float *x, char *pqTable, Size subSize, int offset, float *dis)
+{
+    VectorInnerProductNYRef(d, ny, x, pqTable, subSize, offset, dis);
+}
+
+#endif /* __sw_64__ */
+

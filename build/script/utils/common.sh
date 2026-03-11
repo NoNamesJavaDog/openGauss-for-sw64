@@ -111,6 +111,10 @@ if [ "$PLATFORM_ARCH"X == "loongarch64"X ];then
     gcc_version="8.3"
 fi
 
+if [ "$PLATFORM_ARCH"X == "sw_64"X ];then
+    gcc_version="8.3"
+fi
+
 if [ "$PLATFORM_ARCH"X == "aarch64"X ] && [ "$gcc_version" == "10.3" ]; then
     gcc_sub_version="1"
 else
@@ -122,12 +126,24 @@ export CXX="${USE_CCACHE}$BUILD_TOOLS_PATH/gcc$gcc_version/gcc/bin/g++"
 export LD_LIBRARY_PATH=$BUILD_TOOLS_PATH/gcc$gcc_version/gcc/lib64:$BUILD_TOOLS_PATH/gcc$gcc_version/isl/lib:$BUILD_TOOLS_PATH/gcc$gcc_version/mpc/lib/:$BUILD_TOOLS_PATH/gcc$gcc_version/mpfr/lib/:$BUILD_TOOLS_PATH/gcc$gcc_version/gmp/lib/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=$BINARYLIBS_PATH/zstd/lib:$LD_LIBRARY_PATH
 export PATH=$BUILD_TOOLS_PATH/gcc$gcc_version/gcc/bin:$PATH
+# sw_64: override to use system gcc (no bundled gcc available)
+if [ "$PLATFORM_ARCH"X == "sw_64"X ];then
+    export CC="${USE_CCACHE}$(which gcc)"
+    export CXX="${USE_CCACHE}$(which g++)"
+    export LD_LIBRARY_PATH=/usr/lib:$LD_LIBRARY_PATH
+fi
+
 export JAVA_HOME=${PLATFORM_PATH}/huaweijdk8/${PLATFORM_ARCH}/jdk
 
-export GAUSS_PYTHON_HOME=${PLATFORM_PATH}/python3.7
-export CPLUS_INCLUDE_PATH=$GAUSS_PYTHON_HOME/include/python3.7m:$CPLUS_INCLUDE_PATH
+if [ "$PLATFORM_ARCH"X != "sw_64"X ]; then
+    export GAUSS_PYTHON_HOME=${PLATFORM_PATH}/python3.7
+    export CPLUS_INCLUDE_PATH=$GAUSS_PYTHON_HOME/include/python3.7m:$CPLUS_INCLUDE_PATH
+    export LD_LIBRARY_PATH=$PLATFORM_PATH/python3.7/lib:$LD_LIBRARY_PATH
+else
+    # sw_64: use system python to avoid LD_LIBRARY_PATH conflicts
+    export GAUSS_PYTHON_HOME=/usr
+fi
 export LD_LIBRARY_PATH=$BINARYLIBS_PATH/openssl/comm/lib:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=$PLATFORM_PATH/python3.7/lib:$LD_LIBRARY_PATH
 
 declare ERR_FAILED=1
 declare ERR_OK=0

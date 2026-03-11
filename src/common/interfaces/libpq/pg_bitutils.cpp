@@ -1,0 +1,1 @@
+/root/openGauss-server/./src/common/port/pg_bitutils.cpp

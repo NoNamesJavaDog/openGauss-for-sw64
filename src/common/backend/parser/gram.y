@@ -17694,13 +17694,19 @@ CreatePackageStmt:
                         parser_yyerror("package spec is not ended correctly");
                     } else {
                         const YYLTYPE yyleng = pg_yyget_leng(yyscanner);
-                        yyextra->lookaheads[0] = {
-                            .token = tok,
-                            .yylloc = yylloc,
-                            .yyleng = yyleng,
-                            .prev_hold_char_loc = yylloc + yyleng,
-                            .prev_hold_char = yyextra->core_yy_extra.scanbuf[yylloc + yyleng],
-                        };
+                        base_yy_lookahead tmp_la;
+
+                        tmp_la.token = tok;
+
+                        tmp_la.yylloc = yylloc;
+
+                        tmp_la.yyleng = yyleng;
+
+                        tmp_la.prev_hold_char_loc = yylloc + yyleng;
+
+                        tmp_la.prev_hold_char = yyextra->core_yy_extra.scanbuf[yylloc + yyleng];
+
+                        yyextra->lookaheads[0] = tmp_la;
                         yyextra->lookahead_len = 1;
                     }
 
@@ -17987,13 +17993,19 @@ pkg_body_subprogram: {
                 else
                 {
                     const YYLTYPE yyleng = pg_yyget_leng(yyscanner);
-                    yyextra->lookaheads[0] = {
-                        .token = tok,
-                        .yylloc = yylloc,
-                        .yyleng = yyleng,
-                        .prev_hold_char_loc = yylloc + yyleng,
-                        .prev_hold_char = yyextra->core_yy_extra.scanbuf[yylloc + yyleng],
-                    };
+                    base_yy_lookahead tmp_la;
+
+                    tmp_la.token = tok;
+
+                    tmp_la.yylloc = yylloc;
+
+                    tmp_la.yyleng = yyleng;
+
+                    tmp_la.prev_hold_char_loc = yylloc + yyleng;
+
+                    tmp_la.prev_hold_char = yyextra->core_yy_extra.scanbuf[yylloc + yyleng];
+
+                    yyextra->lookaheads[0] = tmp_la;
                     yyextra->lookahead_len = 1;
                 }
                 /* Reset the flag which mark whether we are in slash proc. */
@@ -18633,13 +18645,19 @@ subprogram_body: 	{
 								else
 								{
 									const YYLTYPE yyleng = pg_yyget_leng(yyscanner);
-									yyextra->lookaheads[0] = {
-										.token = tok,
-										.yylloc = yylloc,
-										.yyleng = yyleng,
-										.prev_hold_char_loc = yylloc + yyleng,
-										.prev_hold_char = yyextra->core_yy_extra.scanbuf[yylloc + yyleng],
-									};
+									base_yy_lookahead tmp_la;
+
+									tmp_la.token = tok;
+
+									tmp_la.yylloc = yylloc;
+
+									tmp_la.yyleng = yyleng;
+
+									tmp_la.prev_hold_char_loc = yylloc + yyleng;
+
+									tmp_la.prev_hold_char = yyextra->core_yy_extra.scanbuf[yylloc + yyleng];
+
+									yyextra->lookaheads[0] = tmp_la;
 									yyextra->lookahead_len = 1;
 								}
 							}

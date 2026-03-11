@@ -647,6 +647,17 @@ do \
 
 #endif /* loongarch */
 
+#if defined(__sw_64__) || defined(__sw_64) /* Sunway sw_64 */
+#define HAS_TEST_AND_SET
+
+typedef unsigned long slock_t;
+
+#define TAS(lock) __sync_lock_test_and_set(lock, 1)
+#define S_UNLOCK(lock) __sync_lock_release(lock)
+#define SPIN_DELAY() __sync_synchronize()
+
+#endif /* __sw_64__ */
+
 #if defined(__alpha) || defined(__alpha__) /* Alpha */
 /*
  * Correct multi-processor locking methods are explained in section 5.5.3

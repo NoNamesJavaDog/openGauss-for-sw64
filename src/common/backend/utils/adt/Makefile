@@ -54,6 +54,10 @@ ifneq ($(filter ppc64%, $(shell uname -m)), )
        VECTOR_OPT =
 endif
 
+ifneq ($(filter sw_64%, $(shell uname -m)), )
+       VECTOR_OPT =
+endif
+
 VECTOR_CFLAGS += $(VECTOR_OPT) -ftree-vectorize -fassociative-math -fno-signed-zeros -fno-trapping-math
 
 VECTOR_SRC = bitvec.o f2s.o halfutils.o halfvec.o sparsevec.o vector.o

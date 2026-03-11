@@ -80,11 +80,14 @@ function make_license_control()
 {
     python_exec=$(which python 2>/dev/null)
 
+    local rc=0
     if [ -x "$python_exec" ]; then
-        $python_exec ${binarylib_dir}/buildtools/license_control/encrypted_version_file.py >> "$LOG_FILE" 2>&1
+        (unset PYTHONHOME PYTHONPATH; LD_LIBRARY_PATH=/usr/lib64:/usr/lib \
+            $python_exec ${binarylib_dir}/buildtools/license_control/encrypted_version_file.py >> "$LOG_FILE" 2>&1)
+        rc=$?
     fi
 
-    if [ $? -ne 0 ]; then
+    if [ $rc -ne 0 ]; then
         die "create ${binarylib_dir}/buildtools/license_control license file failed."
     fi
 
@@ -147,7 +150,7 @@ function install_gaussdb()
     echo "Begin configure." >> "$LOG_FILE" 2>&1
     chmod 755 configure
 
-    if [ "$product_mode"x == "opengauss"x -a "$PLATFORM_ARCH"x != "loongarch64"x ]; then
+    if [ "$product_mode"x == "opengauss"x -a "$PLATFORM_ARCH"x != "loongarch64"x -a "$PLATFORM_ARCH"x != "sw_64"x ]; then
         enable_readline="--with-readline"
     else
         enable_readline="--without-readline"
@@ -174,6 +177,11 @@ function install_gaussdb()
         fi
         
         if [ "$PLATFORM_ARCH"x = "loongarch64"x ] ; then
+            GAUSSDB_EXTRA_FLAGS+=" -D__USE_SPINLOCK"
+            extra_config_opt+=" --enable-llvm=no --disable-jemalloc "
+        fi
+
+        if [ "$PLATFORM_ARCH"x = "sw_64"x ] ; then
             GAUSSDB_EXTRA_FLAGS+=" -D__USE_SPINLOCK"
             extra_config_opt+=" --enable-llvm=no --disable-jemalloc "
         fi

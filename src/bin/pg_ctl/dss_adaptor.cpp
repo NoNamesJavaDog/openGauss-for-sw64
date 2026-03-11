@@ -1,0 +1,1 @@
+/root/openGauss-server/./src/gausskernel/storage/dss/dss_adaptor.cpp

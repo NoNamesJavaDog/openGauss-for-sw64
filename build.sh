@@ -114,9 +114,14 @@ check_euler_dependencies() {
 
 
 check_dependencies() {
-    detect_pkg_manager 
+    detect_pkg_manager
     check_centos_dependencies
     check_euler_dependencies
+
+    # sw_64: replace openjdk with swjdk package name
+    if [ "$(uname -m)" = "sw_64" ]; then
+        DEPENDENCIES_YUM_COMMON=("${DEPENDENCIES_YUM_COMMON[@]/java-1.8.0-openjdk-devel/java-1.8.0-swjdk-devel}")
+    fi
 
     if [ "$pkg_manager" == "yum" ]; then
         for dep in "${DEPENDENCIES_YUM_COMMON[@]}"; do
