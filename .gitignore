@@ -15,7 +15,6 @@
 objfiles.txt
 
 /tmp_build/
-/output/
 /mppdb_temp_install/
 /GNUmakefile
 /config.status
